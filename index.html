@@ -1,0 +1,31 @@
+<html ng-app="sse"> <!-- The module name here is very important //-->
+  <head>
+    <title>Tiny Angular.js + SSE Example</title>
+    <script src="http://code.angularjs.org/1.0.7/angular.min.js"></script>
+  </head>
+  <body>
+    <div ng-controller="Ctrl">
+      <!-- >>>>>>{{msg}} -->
+      <ul>
+        <li ng-repeat="user in users">User Name: {{ user.name }} ::: {{ user.id }}</li>
+      </ul>
+    </div>
+  </body>
+  <script>
+    angular.module('sse', []);
+
+    function Ctrl($scope) {
+      var source = new EventSource('/customer/1234/users');
+      $scope.users = [];
+       var handleCallback = function (msg) {
+            $scope.$apply(function () {
+                $scope.users.push(JSON.parse(msg.data));
+            });
+        }
+       source.addEventListener('message', handleCallback, false);
+       source.addEventListener('end', function (event) {
+            this.close();
+      });
+    }
+  </script>
+</html>
